@@ -1,6 +1,6 @@
 { "name": "bufferstream"
 , "description": "painless stream buffering and cutting"
-, "version": "0.0.2"
+, "version": "0.0.3"
 , "homepage": "https://github.com/dodo/node-bufferstream"
 , "author": "dodo (https://github.com/dodo)"
 , "repository": {"type": "git", "url": "git://github.com/dodo/node-bufferstream.git"}
@@ -8,7 +8,7 @@
 , "engines": {"node": "0.4.x"}
 , "keywords": ["buffer", "buffers", "stream", "streams"]
 , "scripts": {
-    "preinstall": "node-waf configure",
+    "preinstall": "node-waf configure build",
     "install": "node-waf build",
     "update": "node-waf build"}
 , "dependencies": {
