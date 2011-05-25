@@ -1,4 +1,5 @@
 from os.path import dirname, abspath
+import os
 
 top = "."
 out = "build"
@@ -7,10 +8,9 @@ class Dummy: pass
 
 
 def configure(ctx):
-    ctx.find_program("coffee",
-        var="COFFEE",
-        path_list=[abspath('./node_modules/coffee-script/bin')])
-    print ctx.env.COFFEE
+    ctx.env.PATH = os.environ['PATH'].split(os.pathsep)
+    ctx.env.PATH.append(abspath("./node_modules/coffee-script/bin"))
+    ctx.find_program("coffee", var="COFFEE", path_list=ctx.env.PATH)
     ctx.env.ARGS = "-co"
 
 
