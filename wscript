@@ -1,4 +1,4 @@
-from os.path import dirname, abspath
+from os.path import dirname, join
 import os
 
 top = "."
@@ -9,7 +9,7 @@ class Dummy: pass
 
 def configure(ctx):
     ctx.env.PATH = os.environ['PATH'].split(os.pathsep)
-    ctx.env.PATH.append(abspath("./node_modules/coffee-script/bin"))
+    ctx.env.PATH.append(join(ctx.cwd, "node_modules", "coffee-script", "bin"))
     ctx.find_program("coffee", var="COFFEE", path_list=ctx.env.PATH)
     ctx.env.ARGS = "-co"
 
