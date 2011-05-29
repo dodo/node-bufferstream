@@ -4,6 +4,8 @@ painless stream buffering, cutting and piping.
 
 ## install
 
+make sure you have `node-waf` installed (contained in `nodejs-dev` package).
+
     npm install bufferstream
 
 ## api
