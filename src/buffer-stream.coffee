@@ -62,7 +62,8 @@ class BufferStream extends Stream
         @flush() unless @paused
 
     flush: () =>
-        @emit('data', @buffer) if @buffer.length
+        return unless @buffer.length
+        @emit('data', @buffer)
         @buffer = new Buffer(0)
 
     split: (args...) =>
