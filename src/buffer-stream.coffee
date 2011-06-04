@@ -37,6 +37,7 @@ class BufferStream extends Stream
         @splitters = []
         @buffer = new Buffer(0)
         @encoding = encoding ? 'utf8'
+        @__defineGetter__ 'length', () => @buffer.length
         super
 
     getBuffer:   () => @buffer

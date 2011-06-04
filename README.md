@@ -64,6 +64,12 @@ returns its [Buffer](http://nodejs.org/docs/v0.4.7/api/buffers.html).
 
 shortcut for `stream.buffer.toString()`
 
+### stream.length
+
+    stream.length
+
+shortcut for `stream.buffer.length`
+
 ## example
 
     BufferStream = require('bufferstream')
