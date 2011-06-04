@@ -48,6 +48,8 @@ this also works for binary data.
 BufferStream slices its buffer to the first position of on of the splitter tokens and emits it.
 this data will be lost when not handled.
 
+__Warning:__ try to avoid calling `buffer.emit('data', data)` more than one time, because this will likely throw `Error: Offset is out of bounds`.
+
 ### stream.getBuffer
 
     stream.getBuffer()
