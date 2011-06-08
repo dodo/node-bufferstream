@@ -59,6 +59,8 @@ class BufferStream extends Stream
 
     enable:  () => @enabled = on
     disable: (args...) =>
+        if args.length is 1 and isArray(args[0])
+            args = args[0]
         for splitter in args
             i = @splitters.indexOf(splitter)
             continue if i is -1
