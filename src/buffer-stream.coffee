@@ -58,9 +58,16 @@ class BufferStream extends Stream
             @emit('close')
 
     enable:  () => @enabled = on
-    disable: () =>
-        @enabled = off
-        @flush() unless @paused
+    disable: (args...) =>
+        for splitter in args
+            i = @splitters.indexOf(splitter)
+            continue if i is -1
+            @splitters = @splitters.slice(0,i).concat(@splitters.slice(i+1))
+            break unless @splitters.length
+        unless args.length and @splitters.length
+            @enabled = off
+            @flush() unless @paused
+
 
     flush: () =>
         return unless @buffer.length
