@@ -31,6 +31,12 @@ flushes buffer and disables stream buffering.
 BufferStream now pipes all data as long as the output accepting data.
 when the output is draining BufferStream will buffer all input temporary.
 
+    stream.disable(token, ...)
+    stream.disable(tokens) // Array
+ * `token[s]` buffer splitters (should be String or Buffer)
+
+disables given tokens. wont flush until no splitter tokens are left.
+
 ### stream.split
 
     stream.split(token, ...)
