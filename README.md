@@ -14,6 +14,7 @@ BufferStream is a full node.js [Stream](http://nodejs.org/docs/v0.4.7/api/stream
 
 ### BufferStream
 
+    BufferStream = require('bufferstream')
     stream = new BufferStream([encoding])
  * `encoding` default encoding for writing strings
 
@@ -76,6 +77,22 @@ shortcut for `stream.buffer.toString()`
 
 shortcut for `stream.buffer.length`
 
+### PostBuffer
+
+    PostBuffer = require('bufferstream/postbuffer')
+    post = new PostBuffer(req)
+ * `req` http.ServerRequest
+
+for if you want to get all the post data from a http server request and do some db reqeust before.
+
+buffer http client
+
+### post.onEnd
+
+    post.onEnd(function (data) {…});
+
+set a callback to get all post data from a http server request
+
 ## example
 
     BufferStream = require('bufferstream')
@@ -94,3 +111,4 @@ results in
     23
 
 * https://github.com/dodo/node-bufferstream/blob/master/example/split.js
+
