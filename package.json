@@ -8,10 +8,14 @@
 , "engines": {"node": "0.4.x"}
 , "keywords": ["buffer", "buffers", "stream", "streams"]
 , "scripts": {
+    "test": "./benchmark",
     "preinstall": "#preinstall DO NOTHING",
     "install": "node-waf configure build",
     "update": "node-waf build"}
 , "dependencies": {
     "buffertools": ">= 1.0.3",
     "coffee-script": ">= 1.1.1"}
+, "devDependencies": {
+    "cli": ">= 0.3.7",
+    "express": ">= 2.4.5"}
 }
