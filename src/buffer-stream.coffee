@@ -64,7 +64,7 @@ class BufferStream extends Stream
             continue if i is -1
             @splitters = @splitters.slice(0,i).concat(@splitters.slice(i+1))
             break unless @splitters.length
-        unless args.length and @splitters.length
+        unless args.length
             @enabled = off
             @flush() unless @paused
 
