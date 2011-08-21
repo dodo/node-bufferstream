@@ -10,8 +10,7 @@ class PostBuffer
             @got_all_data = yes
             @callback?(@stream.buffer)
 
-    onEnd: (callback) =>
-        @callback = callback
+    onEnd: (@callback) =>
         @callback(@stream.buffer) if @got_all_data
 
 # exports

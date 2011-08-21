@@ -1,7 +1,7 @@
-Stream = require('stream').Stream
+{ Stream } = require('stream')
 buffertools = require('buffertools')
-[min, max] = [Math.min, Math.max]
 [isArray, isBuffer] = [Array.isArray, Buffer.isBuffer]
+{ min, max } = Math
 
 
 split = () ->
@@ -28,7 +28,7 @@ split = () ->
 
 
 class BufferStream extends Stream
-    constructor: (encoding) ->
+    constructor: (@encoding = 'utf8') ->
         @finished = no
         @paused = off
         @enabled = on
@@ -36,15 +36,13 @@ class BufferStream extends Stream
         @readable = on
         @splitters = []
         @buffer = new Buffer(0)
-        @encoding = encoding ? 'utf8'
         @__defineGetter__ 'length', () => @buffer.length
         super
 
     getBuffer:   () => @buffer
     toString:    () => @buffer.toString()
     destroySoon: () => @destroy()
-    setEncoding: (encoding) =>
-        @encoding = encoding
+    setEncoding: (@encoding) =>
 
     pause:  () =>
         @paused = on
