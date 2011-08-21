@@ -97,7 +97,7 @@ class BufferStream extends Stream
 
         if @enabled or @paused
             @buffer = concat_(@buffer, buffer)
-            split.call(this) if @splitters.length
+            split.call(this) if @enabled and @splitters.length
         else if not @paused
             @emit('data', buffer)
         yes # it's safe to immediately write again
