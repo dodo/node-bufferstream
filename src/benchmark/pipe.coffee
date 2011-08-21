@@ -39,6 +39,15 @@ cli.main (args, opts) ->
                 length += chunk.length
                 cli.progress length / stats.size
 
+            buffer.on 'pause', () =>
+                @debug "buffer paused."
+
+            buffer.on 'resume', () =>
+                @debug "buffer resumed."
+
+            buffer.on 'end', () =>
+                @info "buffer ended."
+
 
         server.listen opts.port, 'localhost', () =>
             @ok "server listen on port #{opts.port} …"
