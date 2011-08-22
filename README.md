@@ -16,9 +16,22 @@ BufferStream is a full node.js [Stream](http://nodejs.org/docs/v0.4.7/api/stream
 
 ```javascript
 BufferStream = require('bufferstream')
-stream = new BufferStream([encoding])
+stream = new BufferStream([{encoding:'utf8', size:'none'}]) // default
 ```
  * `encoding` default encoding for writing strings
+ * `size` defines buffer level or sets buffer to given size (see ↓`setSize` for more)
+
+### stream.setSize
+
+```javascript
+stream.setSize(size) // can be one of ['none', 'flexible', <number>]
+```
+
+different buffer behaviors can be triggered by size:
+
+ * `none` when output drains, bufferstream drains too
+ * `flexible` buffers everthing that it gets and not piping out
+ * `<number>` `TODO` buffer has given size. buffers everthing until buffer is full. when buffer is full then  the stream will drain
 
 ### stream.enable
 
@@ -119,7 +132,7 @@ set a callback to get all post data from a http server request
 
 ```javascript
 BufferStream = require('bufferstream')
-stream = new BufferStream('utf8')
+stream = new BufferStream({encoding:'utf8', size:'flexible'})
 stream.split('//', ':')
 stream.on('split', function (chunk, token) {
     console.log("got '%s' by '%s'", chunk.toString(), token.toString())
