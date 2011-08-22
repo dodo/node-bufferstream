@@ -113,24 +113,23 @@ class BufferStream extends Stream
         else @emit('error',
             new Error("Argument should be either a buffer or a string."))
 
+        if @buffer.length is 0
+            @buffer = buffer
+        else
+            @buffer = concat_(@buffer, buffer)
+
         if @size is 'flexible'
-            if @enabled or @paused
-                @buffer = concat_(@buffer, buffer)
+            if @enabled
                 split.call(this)
-            else if not @paused
-                @emit('data', buffer)
+            else
+                @flush() unless @paused
             yes # it's safe to immediately write again
 
         else if @size is 'none'
-            if @buffer.length is 0
-                @buffer = buffer
-            else
-                @buffer = concat_(@buffer, buffer)
+            @buffer = split.call(this) if @enabled
             if @paused
-                @buffer = split.call(this)
                 no # because the sink is full
             else
-                split.call(this) if @enabled
                 @flush()
                 yes # the sink is'nt full yet
 
