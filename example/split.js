@@ -1,7 +1,9 @@
 var BufferStream = require('../bufferstream');
 
 
-var stream = new BufferStream('utf8');
+var stream = new BufferStream({encoding:'utf8', size:'flexible'});
+console.log("stream size is", stream.size);
+
 stream.split('//', ':');
 
 var i = 2;
@@ -10,5 +12,7 @@ stream.on('split', function (chunk, token) {
     if (token === ':'  || (token === '//' && !--i)) stream.disable(token);
 });
 
-stream.write("buffer:stream//23:42//disabled");
-console.log(stream.toString());
+console.log("writing stream is",
+            stream.write("buffer:stream//23:42//disabled") && "ok" || "failed");
+
+console.log("stream content:", stream.toString());
