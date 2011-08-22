@@ -13,8 +13,8 @@ class PostBuffer
     onEnd: (@callback) =>
         @callback(@stream.buffer) if @got_all_data
 
-    pipe: (dest) =>
-        @stream.pipe(dest)
+    pipe: (dest, options) =>
+        @stream.pipe(dest, options)
         @stream.setSize('none')
         dest # Allow for unix-like usage: A.pipe(B).pipe(C)
 # exports

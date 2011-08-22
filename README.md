@@ -131,10 +131,11 @@ set a callback to get all post data from a http server request
 ### post.pipe
 
 ```javascript
-post.pipe(stream);
+post.pipe(stream, options);
 ```
 
 pumps data into another stream to allow incoming streams
+given options will be passed to Stream.pipe
 
 ## example
 
