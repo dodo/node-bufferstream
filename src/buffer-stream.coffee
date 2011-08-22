@@ -4,15 +4,15 @@ buffertools = require('buffertools')
 { min, max } = Math
 
 
-split = (buffer) ->
-    return buffer unless buffer.length
+split = () ->
+    return unless @buffer.length
     can_split = @enabled and @splitters.length
     while can_split
         cur = null
-        pos = buflen = buffer.length
+        pos = buflen = @buffer.length
         for splitter in @splitters
             continue if buflen < splitter.length
-            i = buffertools.indexOf.call(buffer, splitter)
+            i = buffertools.indexOf.call(@buffer, splitter)
             if i isnt -1 and i < pos and i < buflen
                 cur = splitter
                 pos = i
@@ -20,12 +20,11 @@ split = (buffer) ->
         break if not can_split
         found = new Buffer(min(buflen, pos))
         rest = new Buffer(max(0, buflen - cur.length - pos))
-        buffer.copy(found, 0, 0, min(buflen, pos))
-        buffer.copy(rest, 0, min(buflen, pos + cur.length))
-        buffer = rest
+        @buffer.copy(found, 0, 0, min(buflen, pos))
+        @buffer.copy(rest, 0, min(buflen, pos + cur.length))
+        @buffer = rest
         @emit('split', found, cur)
-        break if not @enabled or buffer.length is 0
-    buffer
+        break if not @enabled or @buffer.length is 0
 
 
 class BufferStream extends Stream
@@ -78,6 +77,8 @@ class BufferStream extends Stream
             continue if i is -1
             @splitters = @splitters.slice(0,i).concat(@splitters.slice(i+1))
             break unless @splitters.length
+        unless @splitters.length
+            @enabled = off
         unless args.length
             @enabled = off
             @flush() unless @paused
@@ -115,19 +116,26 @@ class BufferStream extends Stream
         if @size is 'flexible'
             if @enabled or @paused
                 @buffer = concat_(@buffer, buffer)
-                @buffer = split.call(this, @buffer)
+                split.call(this)
             else if not @paused
                 @emit('data', buffer)
             yes # it's safe to immediately write again
 
         else if @size is 'none'
-            if @paused
+            if @buffer.length is 0
+                @buffer = buffer
+            else
                 @buffer = concat_(@buffer, buffer)
-                @buffer = split.call(this, @buffer)
+            if @paused
+                @buffer = split.call(this)
                 no # because the sink is full
             else
-                buffer = split.call(this, buffer)
-                @emit('data', buffer)
+                if @enabled
+                    split.call(this)
+                    @emit('data', @buffer)
+                    @reset()
+                else
+                    @emit('data', buffer)
                 yes # the sink is'nt full yet
 
         else # size is a number
