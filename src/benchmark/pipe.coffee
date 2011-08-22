@@ -6,7 +6,7 @@ express = require 'express'
 BufferStream = require '../buffer-stream'
 
 cli.enable 'status'
-cli.setUsage "pipe-benchmark [OPTIONS] filename"
+cli.setUsage "benchmark [OPTIONS] streamed_filename"
 
 cli.parse
     port:  ['p', 'Listen on this port', 'number', 3000]
@@ -28,13 +28,18 @@ cli.main (args, opts) ->
             res.header 'Content-Length', stats.size
             cli.progress length = 0
 
-            buffer = new BufferStream 'binary'
-            file = spawn 'cat', [filename]
+            buffer = new BufferStream encoding:'binary', size:'flexible'
+            file = spawn 'cat', [filename] # a wild cat appears!
 
             file.stdout.pipe buffer
             buffer.pipe res
-
             do buffer.disable
+
+            setTimeout( () =>
+                @info "set buffer size to none"
+                buffer?.setSize 'none'
+            , 10000)
+
             buffer.on 'data', (chunk) ->
                 length += chunk.length
                 cli.progress length / stats.size
