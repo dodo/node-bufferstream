@@ -4,7 +4,7 @@ class PostBuffer
     constructor: (req) ->
         @callback = null
         @got_all_data = no
-        @stream = new BufferStream()
+        @stream = new BufferStream(size:'flexible')
         req.pipe(@stream)
         req.on 'end', =>
             @got_all_data = yes
