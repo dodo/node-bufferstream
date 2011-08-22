@@ -130,12 +130,8 @@ class BufferStream extends Stream
                 @buffer = split.call(this)
                 no # because the sink is full
             else
-                if @enabled
-                    split.call(this)
-                    @emit('data', @buffer)
-                    @reset()
-                else
-                    @emit('data', buffer)
+                split.call(this) if @enabled
+                @flush()
                 yes # the sink is'nt full yet
 
         else # size is a number
