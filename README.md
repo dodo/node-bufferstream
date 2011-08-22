@@ -128,6 +128,14 @@ post.onEnd(function (data) {…});
 
 set a callback to get all post data from a http server request
 
+### post.pipe
+
+```javascript
+post.pipe(stream);
+```
+
+pumps data into another stream to allow incoming streams
+
 ## example
 
 ```javascript
