@@ -29,10 +29,14 @@ split = (buffer) ->
 
 
 class BufferStream extends Stream
-    constructor: ({@encoding, @size} = {}) ->
+    constructor: (opts = {}) ->
+        if typeof opts is 'string'
+            opts = encoding:opts
         # defaults
-        @encoding ?= 'utf8'
-        @size ?= 'none'
+        opts.encoding ?= 'utf8'
+        opts.size ?= 'none'
+        @encoding = opts.encoding
+        @size = opts.size
         # states
         @finished = no
         @paused = off
