@@ -4,15 +4,15 @@ buffertools = require('buffertools')
 { min, max } = Math
 
 
-split = () ->
-    return unless @buffer.length
-    can_split = yes
+split = (buffer) ->
+    return buffer unless buffer.length
+    can_split = @enabled and @splitters.length
     while can_split
         cur = null
-        pos = buflen = @buffer.length
+        pos = buflen = buffer.length
         for splitter in @splitters
             continue if buflen < splitter.length
-            i = buffertools.indexOf.call(@buffer, splitter)
+            i = buffertools.indexOf.call(buffer, splitter)
             if i isnt -1 and i < pos and i < buflen
                 cur = splitter
                 pos = i
@@ -20,11 +20,12 @@ split = () ->
         break if not can_split
         found = new Buffer(min(buflen, pos))
         rest = new Buffer(max(0, buflen - cur.length - pos))
-        @buffer.copy(found, 0, 0, min(buflen, pos))
-        @buffer.copy(rest, 0, min(buflen, pos + cur.length))
-        @buffer = rest
+        buffer.copy(found, 0, 0, min(buflen, pos))
+        buffer.copy(rest, 0, min(buflen, pos + cur.length))
+        buffer = rest
         @emit('split', found, cur)
-        break if not @enabled or @buffer.length is 0
+        break if not @enabled or buffer.length is 0
+    buffer
 
 
 class BufferStream extends Stream
@@ -110,7 +111,7 @@ class BufferStream extends Stream
         if @size is 'flexible'
             if @enabled or @paused
                 @buffer = concat_(@buffer, buffer)
-                split.call(this) if @enabled and @splitters.length
+                @buffer = split.call(this, @buffer)
             else if not @paused
                 @emit('data', buffer)
             yes # it's safe to immediately write again
@@ -118,9 +119,10 @@ class BufferStream extends Stream
         else if @size is 'none'
             if @paused
                 @buffer = concat_(@buffer, buffer)
-                split.call(this) if @enabled and @splitters.length
+                @buffer = split.call(this, @buffer)
                 no # because the sink is full
             else
+                buffer = split.call(this, buffer)
                 @emit('data', buffer)
                 yes # the sink is'nt full yet
 
