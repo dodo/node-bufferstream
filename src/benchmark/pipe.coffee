@@ -33,7 +33,6 @@ cli.main (args, opts) ->
 
             file.stdout.pipe buffer
             buffer.pipe res
-            do buffer.disable
 
             setTimeout( () =>
                 @info "set buffer size to none"
