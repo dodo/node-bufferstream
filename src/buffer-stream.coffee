@@ -28,29 +28,38 @@ split = () ->
 
 
 class BufferStream extends Stream
-    constructor: (@encoding = 'utf8') ->
+    constructor: ({@encoding, @size} = {}) ->
+        # defaults
+        @encoding ?= 'utf8'
+        @size ?= 'none'
+        # states
         @finished = no
         @paused = off
         @enabled = on
         @writable = on
         @readable = on
+        # values
         @splitters = []
-        @buffer = new Buffer(0)
         @__defineGetter__ 'length', () => @buffer.length
+        # init
+        @reset()
         super
 
     getBuffer:   () => @buffer
     toString:    () => @buffer.toString()
     destroySoon: () => @destroy()
     setEncoding: (@encoding) =>
+    setSize:     (@size) =>
+        @flush() if not @paused and @size is 'none'
 
     pause:  () =>
         @paused = on
-        @emit('pause')
+        @emit('pause') if @size is 'none'
     resume: () =>
+        @emit('drain') if @paused
         @paused = off
-        @emit('resume')
-        @flush() unless @enabled
+        @emit('resume') if @size is 'none'
+        @flush() if not @enabled or @size is 'none'
         if @finished
             @emit('end')
             @emit('close')
@@ -68,11 +77,16 @@ class BufferStream extends Stream
             @enabled = off
             @flush() unless @paused
 
+    reset: () =>
+        if typeof @size is 'number'
+            @buffer = new Buffer(@size)
+        else
+            @buffer = new Buffer(0)
 
     flush: () =>
         return unless @buffer.length
         @emit('data', @buffer)
-        @buffer = new Buffer(0)
+        @reset()
 
     split: (args...) =>
         if args.length is 1 and isArray(args[0])
@@ -93,12 +107,25 @@ class BufferStream extends Stream
         else @emit('error',
             new Error("Argument should be either a buffer or a string."))
 
-        if @enabled or @paused
-            @buffer = concat_(@buffer, buffer)
-            split.call(this) if @enabled and @splitters.length
-        else if not @paused
-            @emit('data', buffer)
-        yes # it's safe to immediately write again
+        if @size is 'flexible'
+            if @enabled or @paused
+                @buffer = concat_(@buffer, buffer)
+                split.call(this) if @enabled and @splitters.length
+            else if not @paused
+                @emit('data', buffer)
+            yes # it's safe to immediately write again
+
+        else if @size is 'none'
+            if @paused
+                @buffer = concat_(@buffer, buffer)
+                split.call(this) if @enabled and @splitters.length
+                no # because the sink is full
+            else
+                @emit('data', buffer)
+                yes # the sink is'nt full yet
+
+        else # size is a number
+            throw new Error("not implemented yet :(") # TODO
 
     end: (buffer, encoding) =>
         @write(buffer, encoding) if buffer
