@@ -74,11 +74,14 @@ this also works for binary data.
 
 ```javascript
 stream.on('split', function (chunk, token) {…})
-stream.split(token, function (chunk, token) {…}) // only get called for given token
+stream.split(token, function (chunk, token) {…}) // only get called for this particular token
 ```
 
-BufferStream slices its buffer to the first position of on of the splitter tokens and emits it.
+whenever the stream is enabled it will try to find all splitter token in `stream.buffer`,
+cut it off and emit the chunk (without token) as __split__ event.
 this data will be lost when not handled.
+
+the chunk is the cut off of `stream.buffer` without the token.
 
 __Warning:__ try to avoid calling `stream.emit('data', newchunk)` more than one time, because this will likely throw `Error: Offset is out of bounds`.
 
@@ -158,3 +161,31 @@ results in
 
 * https://github.com/dodo/node-bufferstream/blob/master/example/split.js
 
+## FAQ
+
+> I'm not sure from your readme what the split event emits?
+
+you can specify more than one split token .. so it's emitted whenever
+a token is found.
+
+> does it emit the buffer up to the just before the token starts?
+
+yes.
+
+> also, does it join buffers together if they do not already end in a token?
+
+when size is `flexible` it joins everything together what it gets to
+one buffer (accessible through `stream.buffer` or
+`stream.getBuffer()`)
+whenever it gets data, it will try to find all tokens
+
+> in other words, can I use this to rechunk a stream so that the chunks always break on newlines, for example?
+
+yes.
+
+```javascript
+stream = new BufferStream({size:'flexible'});
+stream.split('\n', function (line) { // line doesn't have a '\n' anymore
+    stream.emit('data', line); // Buffer.isBuffer(line) === true
+});
+```
