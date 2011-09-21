@@ -47,6 +47,7 @@ class BufferStream extends Stream
         @__defineGetter__ 'length', () => @buffer.length
         # init
         @reset()
+        @split opts.split, ((data) -> @emit('data', data)) if opts.split?
         super
 
     getBuffer:   () => @buffer

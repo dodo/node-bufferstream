@@ -20,6 +20,11 @@ stream = new BufferStream([{encoding:'utf8', size:'none'}]) // default
 ```
  * `encoding` default encoding for writing strings
  * `size` defines buffer level or sets buffer to given size (see ↓`setSize` for more)
+ * `split` short form for:
+
+```javascript
+stream.split(token, function (chunk) {stream.emit('data', chunk)})
+```
 
 ### stream.setSize
 
