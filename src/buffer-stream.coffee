@@ -64,8 +64,9 @@ class BufferStream extends Stream
         @emit('drain') if @paused
         @paused = off
         @emit('resume') if @size is 'none'
-        @flush() if not @enabled or @finished
+        @flush() if not @enabled or @size is 'none'
         if @finished
+            @flush()
             @emit('end')
             @emit('close')
 
@@ -142,7 +143,7 @@ class BufferStream extends Stream
         @writable = off
         @finished = yes
         unless @paused
-            @flush() unless @enabled
+            @flush()
             @emit('end')
             @emit('close')
 
