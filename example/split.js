@@ -12,7 +12,13 @@ stream.on('split', function (chunk, token) {
     if (token === ':'  || (token === '//' && !--i)) stream.disable(token);
 });
 
+stream.on('data', function (chunk) {
+    console.log("got data '%s'", chunk.toString());
+});
+
 console.log("writing stream is",
             stream.write("buffer:stream//23:42//disabled") && "ok" || "failed");
+
+stream.end();
 
 console.log("stream content:", stream.toString());
