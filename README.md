@@ -20,6 +20,7 @@ stream = new BufferStream([{encoding:'utf8', size:'none'}]) // default
 ```
  * `encoding` default encoding for writing strings
  * `size` defines buffer level or sets buffer to given size (see ↓`setSize` for more)
+ * `disabled` immediately call disable
  * `split` short form for:
 
 ```javascript

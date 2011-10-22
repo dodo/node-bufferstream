@@ -49,6 +49,7 @@ class BufferStream extends Stream
         @reset()
         @split opts.split, ((data) -> @emit('data', data)) if opts.split?
         super
+        @disable() if opts.disabled
 
     getBuffer:   () => @buffer
     toString:    () => @buffer.toString()
