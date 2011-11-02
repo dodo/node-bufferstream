@@ -5,10 +5,10 @@ class PostBuffer
         @callback = null
         @got_all_data = no
         @stream = new BufferStream(size:'flexible')
-        req.pipe(@stream)
         req.on 'end', =>
             @got_all_data = yes
             @callback?(@stream.buffer)
+        req.pipe(@stream)
 
     onEnd: (@callback) =>
         @callback(@stream.buffer) if @got_all_data
@@ -17,6 +17,7 @@ class PostBuffer
         @stream.pipe(dest, options)
         @stream.setSize('none')
         dest # Allow for unix-like usage: A.pipe(B).pipe(C)
+
 # exports
 
 module.exports = PostBuffer
