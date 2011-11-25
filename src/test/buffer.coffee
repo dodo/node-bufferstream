@@ -4,19 +4,17 @@ BufferStream = require '../buffer-stream'
 module.exports =
 
     defaults: (æ) ->
-        buffer = new BufferStream
-
-        æ.equal buffer.finished, no
-        æ.equal buffer.writable, yes
-        æ.equal buffer.readable, yes
+        buffer = new BufferStream size:'flexible'
 
         æ.equal buffer.encoding, 'utf8'
-        æ.equal buffer.size, 'none'
         æ.equal buffer.length, 0
 
-        results = ["123", "bufferstream"]
+        results = ["123", "bufferstream", "a", "bc", "def"]
 
-        buffer.on 'data', (data) -> æ.equal data, results.shift()
+        # only one result expected
+        buffer.on 'data', (data) ->
+            æ.equal data.toString(), results.join("")
+
         buffer.on 'end', ->
             æ.equal buffer.toString(), ""
             buf = buffer.getBuffer()
