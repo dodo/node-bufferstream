@@ -1,3 +1,5 @@
+path = require 'path'
+{ createReadStream, readFileSync } = require 'fs'
 BufferStream = require '../buffer-stream'
 { isBuffer } = Buffer
 
@@ -79,5 +81,17 @@ module.exports =
         stream.end()
 
 
+    pipe: (æ) ->
+        buffer = new BufferStream split:'\n'
+        buffer.on 'data', (data) -> æ.equal data.toString(), readme.shift()
+        buffer.on 'end', ->
+            æ.equal buffer.toString(), ""
+            æ.deepEqual readme, [ "END" ]
+            æ.done()
 
+        filename = path.join(__dirname,"..","..","..","README.md")
+        readme = "#{readFileSync(filename)}END".split('\n')
+        stream = createReadStream filename
+
+        stream.pipe buffer
 
