@@ -103,7 +103,7 @@ class BufferStream extends Stream
             [splitter, callback] = args
             @splitters.push(splitter)
             return @on 'split', (_, token) ->
-                callback.apply(this, arguments) if token is splitter
+                callback(arguments...) if token is splitter
         @splitters = @splitters.concat(args)
 
     write: (buffer, encoding) =>
@@ -118,7 +118,7 @@ class BufferStream extends Stream
         if @buffer.length is 0
             @buffer = buffer
         else
-            @buffer = concat_(@buffer, buffer)
+            @buffer = concat(@buffer, buffer)
 
         if @size is 'flexible'
             if @enabled
@@ -152,7 +152,7 @@ class BufferStream extends Stream
         @writable = off
 
 
-BufferStream.concat_buffers = concat_ = (args...) ->
+BufferStream.concat_buffers = concat = (args...) ->
     # buffertools.concat returns SlowBuffer D:
     idx = -1
     length = 0
