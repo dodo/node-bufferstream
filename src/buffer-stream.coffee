@@ -109,7 +109,7 @@ class BufferStream extends Stream
             [splitter, callback] = args
             @splitters.push(splitter)
             return @on 'split', (_, token) ->
-                callback(arguments...) if token is splitter
+                callback.apply(this, arguments) if token is splitter
         @splitters = @splitters.concat(args)
 
     write: (buffer, encoding) =>
