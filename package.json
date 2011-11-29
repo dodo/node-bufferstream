@@ -5,7 +5,7 @@
 , "author": "dodo (https://github.com/dodo)"
 , "repository": {"type": "git", "url": "git://github.com/dodo/node-bufferstream.git"}
 , "main": "bufferstream.js"
-, "engines": {"node": "0.4.x"}
+, "engines": {"node": ">= 0.4.x"}
 , "keywords": ["buffer", "buffers", "stream", "streams"]
 , "scripts": {
     "test": "node-waf build && nodeunit test",
