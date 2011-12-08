@@ -1,7 +1,6 @@
 Valve = require 'valvestream'
 fn = require './fn'
 [isArray, isBuffer] = [Array.isArray, Buffer.isBuffer]
-{ min, max } = Math
 
 
 split = () ->
@@ -18,10 +17,7 @@ split = () ->
                 pos = i
         can_split = cur isnt null
         break if not can_split
-        found = new Buffer(min(buflen, pos))
-        rest = new Buffer(max(0, buflen - cur.length - pos))
-        @buffer.copy(found, 0, 0, min(buflen, pos))
-        @buffer.copy(rest, 0, min(buflen, pos + cur.length))
+        [found, rest] = fn.split(@buffer, pos, cur.length)
         @buffer = rest
         @emit('split', found, cur)
         break if not @enabled or @buffer.length is 0

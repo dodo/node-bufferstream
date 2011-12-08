@@ -1,4 +1,5 @@
 isBuffer = Buffer.isBuffer
+{ min, max } = Math
 
 { indexOf:exports.indexOf } = require 'buffertools'
 
@@ -20,3 +21,12 @@ exports.concat = (args...) ->
         buffer.copy(result, pos)
         pos += buffer.length
     result
+
+exports.split = (buffer, pos, offset = 0) ->
+        buflen = buffer.length
+        found = new Buffer(min(buflen, pos))
+        rest = new Buffer(max(0, buflen - pos - offset))
+        buffer.copy(found, 0, 0, min(buflen, pos))
+        buffer.copy(rest, 0, min(buflen, pos + offset))
+        return [found, rest]
+
