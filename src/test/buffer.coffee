@@ -30,7 +30,7 @@ module.exports =
 
 
     concat: (æ) ->
-        concat = BufferStream.concat_buffers
+        concat = BufferStream.fn.concat
 
         b1 = new Buffer "a"
         b2 = new Buffer "bc"

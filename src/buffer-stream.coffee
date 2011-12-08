@@ -1,5 +1,5 @@
 Valve = require 'valvestream'
-buffertools = require 'buffertools'
+fn = require './fn'
 [isArray, isBuffer] = [Array.isArray, Buffer.isBuffer]
 { min, max } = Math
 
@@ -12,7 +12,7 @@ split = () ->
         pos = buflen = @buffer.length
         for splitter in @splitters
             continue if buflen < splitter.length
-            i = buffertools.indexOf.call(@buffer, splitter)
+            i = fn.indexOf.call(@buffer, splitter)
             if i isnt -1 and i < pos and i < buflen
                 cur = splitter
                 pos = i
@@ -151,24 +151,7 @@ class BufferStream extends Valve
             @emit 'end'
             @emit 'close'
 
-BufferStream.concat_buffers = concat = (args...) ->
-    # buffertools.concat returns SlowBuffer D:
-    idx = -1
-    length = 0
-    buffers = []
-    for input, i in args
-        if isBuffer(input)
-            idx = i if input.length
-            length += input.length
-            buffers.push(input)
-    return args[idx] if idx isnt -1 and length is args[idx].length
-    pos = 0
-    result = new Buffer(length)
-    for buffer in buffers
-        continue unless buffer.length
-        buffer.copy(result, pos)
-        pos += buffer.length
-    result
+# exports
 
-
+BufferStream.fn = fn
 module.exports = BufferStream
