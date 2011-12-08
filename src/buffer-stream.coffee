@@ -1,5 +1,5 @@
-{ Stream } = require('stream')
-buffertools = require('buffertools')
+Valve = require 'valvestream'
+buffertools = require 'buffertools'
 [isArray, isBuffer] = [Array.isArray, Buffer.isBuffer]
 { min, max } = Math
 
@@ -27,25 +27,20 @@ split = () ->
         break if not @enabled or @buffer.length is 0
 
 
-class BufferStream extends Stream
+
+class BufferStream extends Valve
     constructor: (opts = {}) ->
         if typeof opts is 'string'
             opts = encoding:opts
         # defaults
-        opts.encoding ?= 'utf8'
         opts.size ?= 'none'
-        @encoding = opts.encoding
-        @size = opts.size
-        # states
-        @finished = no
-        @paused = off
-        @enabled = on
-        @writable = on
-        @readable = on
         # values
+        @size = opts.size
         @splitters = []
         @__defineGetter__ 'length', () => @buffer.length
-        # init
+        # states
+        @enabled = on
+        #init
         @reset()
         super
         # shortcuts
@@ -57,24 +52,10 @@ class BufferStream extends Stream
                     @emit('data', data)
         @disable() if opts.disabled
 
-    getBuffer:   () => @buffer
-    toString:    () => @buffer.toString()
-    destroySoon: () => @destroy()
-    setEncoding: (@encoding) =>
-    setSize:     (@size) =>
-        @flush() if not @paused and @size is 'none'
-
-    pause:  () =>
-        @paused = on
-        @emit('pause') if @size is 'none'
-    resume: () =>
-        @emit('drain') if @paused
-        @paused = off
-        @emit('resume') if @size is 'none'
-        @flush() if not @enabled or @size is 'none' or @finished
-        if @finished
-            @emit('end')
-            @emit('close')
+    getBuffer: () => @buffer
+    toString:  () => @buffer.toString()
+    setSize: (@size) =>
+        @clear() if not @paused and @size is 'none'
 
     enable:  () => @enabled = on
     disable: (args...) =>
@@ -89,18 +70,7 @@ class BufferStream extends Stream
             @enabled = off
         unless args.length
             @enabled = off
-            @flush() unless @paused
-
-    reset: () =>
-        if typeof @size is 'number'
-            @buffer = new Buffer(@size)
-        else
-            @buffer = new Buffer(0)
-
-    flush: () =>
-        return unless @buffer.length
-        @emit('data', @buffer)
-        @reset()
+            @clear() unless @paused
 
     split: (args...) =>
         if args.length is 1 and isArray(args[0])
@@ -112,8 +82,13 @@ class BufferStream extends Stream
                 callback.apply(this, arguments) if token is splitter
         @splitters = @splitters.concat(args)
 
+    ##
+    # overwrite Valve::write
     write: (buffer, encoding) =>
-        @emit('error', new Error("Stream is not writable.")) if not @writable
+        unless @writable
+            @emit 'error', new Error("Stream is not writable.")
+            return false
+
         if isBuffer(buffer)
             # no action required
         else if typeof buffer is 'string'
@@ -128,35 +103,53 @@ class BufferStream extends Stream
 
         if @size is 'flexible'
             if @enabled
+                # we buffer everything
                 split.call(this)
+                return true # it's safe to immediately write again
             else
-                @flush() unless @paused
-            yes # it's safe to immediately write again
+                return @clear()
 
         else if @size is 'none'
             @buffer = split.call(this) if @enabled
-            if @paused
-                no # because the sink is full
-            else
-                @flush()
-                yes # the sink is'nt full yet
+            return @clear()
 
         else # size is a number
             throw new Error("not implemented yet :(") # TODO
 
-    end: (buffer, encoding) =>
-        @write(buffer, encoding) if buffer
+    clear: () =>
+        return unless @buffer.length
+        buffer = @buffer # get before reset
+        @reset()
+        return @flush buffer # FIXME paused check # <---------------------------
+
+    reset: () =>
+        if typeof @size is 'number'
+            @buffer = new Buffer(@size)
+        else
+            @buffer = new Buffer(0)
+
+    # FIXME
+
+    end: (data, encoding) ->
+        @write(data, encoding) if data?
         @writable = off
         @finished = yes
         unless @paused
-            @flush()
-            @emit('end')
-            @emit('close')
+            @clear() # <--------------------------------------------------------
+            @emit 'end'
+            @emit 'close'
 
-    destroy: () =>
-        @readable = off
-        @writable = off
-
+    resume: () ->
+        return if not @paused or --@jammed
+        @emit 'drain' if @paused
+        @paused = no
+        @clear() if not @enabled or @size is 'none' or @finished # <------------
+        for source in @sources
+            source.resume?() if source.readable
+        @emit 'resume' if @size is 'none' # <-----------------------------------
+        if @finished
+            @emit 'end'
+            @emit 'close'
 
 BufferStream.concat_buffers = concat = (args...) ->
     # buffertools.concat returns SlowBuffer D:
@@ -164,7 +157,7 @@ BufferStream.concat_buffers = concat = (args...) ->
     length = 0
     buffers = []
     for input, i in args
-        if Buffer.isBuffer(input)
+        if isBuffer(input)
             idx = i if input.length
             length += input.length
             buffers.push(input)

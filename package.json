@@ -13,6 +13,7 @@
     "install": "node-waf configure build",
     "update": "node-waf build"}
 , "dependencies": {
+    "valvestream": ">= 0.0.1",
     "buffertools": ">= 1.0.3",
     "coffee-script": ">= 1.1.2"}
 , "devDependencies": {
