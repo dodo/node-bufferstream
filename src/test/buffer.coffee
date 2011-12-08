@@ -46,6 +46,7 @@ module.exports =
         buffer = new BufferStream size:'flexible', split:'\n'
         buffer.on 'data', (data) -> æ.equal data.toString(), readme.shift()
         buffer.on 'end', ->
+            æ.equal buffer.length, 0
             æ.equal buffer.toString(), ""
             æ.deepEqual readme, [ "END" ]
             æ.done()
