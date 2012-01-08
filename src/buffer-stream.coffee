@@ -119,7 +119,7 @@ class BufferStream extends Valve
         return unless @buffer.length
         buffer = @buffer # get before reset
         @reset()
-        return @flush buffer # FIXME paused check # <---------------------------
+        @flush buffer
 
     reset: () =>
         if typeof @size is 'number'
@@ -141,6 +141,7 @@ class BufferStream extends Valve
         if @finished
             @emit 'end'
             @emit 'close'
+
 
 # exports
 
