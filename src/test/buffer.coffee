@@ -43,16 +43,15 @@ module.exports =
 
 
     pipe: (æ) ->
-        buffer = new BufferStream size:'flexible', split:'\n'
-        buffer.on 'data', (data) -> æ.equal data.toString(), readme.shift()
+        buffer = new BufferStream size:'flexible'
+        buffer.on 'data', (data) -> throw 'up'
         buffer.on 'end', ->
-            æ.equal buffer.length, 0
-            æ.equal buffer.toString(), ""
-            æ.deepEqual readme, [ "END" ]
+            æ.equal buffer.enabled, yes
+            æ.equal "#{buffer.toString()}END", readme
             æ.done()
 
-        filename = path.join(__dirname,"..","..","..","README.md")
-        readme = "#{readFileSync(filename)}END".split('\n')
+        filename = path.join(__dirname,"..","README.md")
+        readme = "#{readFileSync(filename)}END"
         stream = createReadStream filename
 
         stream.pipe buffer
