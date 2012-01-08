@@ -8,16 +8,15 @@
 , "engines": {"node": ">= 0.4.x"}
 , "keywords": ["buffer", "buffers", "stream", "streams"]
 , "scripts": {
-    "test": "node-waf build && nodeunit test",
-    "preinstall": "#preinstall DO NOTHING",
-    "install": "node-waf configure build",
-    "update": "node-waf build"}
+    "test": "cake build && nodeunit test",
+    "prepublish": "cake build"}
 , "dependencies": {
-    "valvestream": ">= 0.0.1",
     "buffertools": ">= 1.0.3",
-    "coffee-script": ">= 1.1.2"}
+    "valvestream": ">= 0.0.0"}
 , "devDependencies": {
-    "nodeunit": ">= 0.6.4",
+    "nodeunit": ">= 0.5.4",
+    "muffin": ">= 0.2.6",
+    "coffee-script": ">= 1.1.2",
     "cli": ">= 0.3.7",
     "express": ">= 2.4.5"}
 }

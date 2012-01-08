@@ -1,2 +1,2 @@
 
-module.exports = require('./build/default/buffer-stream')
+module.exports = require('./lib/buffer-stream')

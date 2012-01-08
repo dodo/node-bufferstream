@@ -1,6 +1,6 @@
 path = require 'path'
 { createReadStream, readFileSync } = require 'fs'
-BufferStream = require '../buffer-stream'
+BufferStream = require '../'
 { isBuffer } = Buffer
 
 module.exports =

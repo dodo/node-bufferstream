@@ -1,2 +1,2 @@
 
-module.exports = require('./build/default/post-buffer')
+module.exports = require('./lib/post-buffer')
