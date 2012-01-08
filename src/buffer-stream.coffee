@@ -102,6 +102,8 @@ class BufferStream extends Valve
             if @enabled
                 # we buffer everything
                 split.call(this)
+                if @finished # currently finishing
+                    return @clear()
                 return true # it's safe to immediately write again
             else
                 return @clear()
