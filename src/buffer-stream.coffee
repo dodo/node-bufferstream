@@ -96,7 +96,7 @@ class BufferStream extends Valve
         if @buffer.length is 0
             @buffer = buffer
         else
-            @buffer = concat(@buffer, buffer)
+            @buffer = fn.concat(@buffer, buffer)
 
         if @size is 'flexible'
             if @enabled
