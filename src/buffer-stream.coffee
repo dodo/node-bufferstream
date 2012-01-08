@@ -126,19 +126,11 @@ class BufferStream extends Valve
             @buffer = new Buffer(0)
 
     # FIXME
-
-    end: (data, encoding) ->
-        @write(data, encoding) if data?
-        @writable = off
-        @finished = yes
-        unless @paused
-            @clear() # <--------------------------------------------------------
-            @emit 'end'
-            @emit 'close'
-
     resume: () ->
-        return if not @paused or --@jammed
-        @emit 'drain' if @paused
+        return if not @paused or @jammed is 0
+        @jammed--
+        return unless @jammed is 0
+        @emit 'drain'
         @paused = no
         @clear() if not @enabled or @size is 'none' or @finished # <------------
         for source in @sources
