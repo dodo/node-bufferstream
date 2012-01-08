@@ -36,6 +36,7 @@ class BufferStream extends Valve
         @__defineGetter__ 'length', () => @buffer.length
         # states
         @enabled = on
+        @writable = on if @size is 'flexible'
         #init
         @reset()
         super
