@@ -195,3 +195,5 @@ stream.split('\n', function (line) { // line doesn't have a '\n' anymore
     stream.emit('data', line); // Buffer.isBuffer(line) === true
 });
 ```
+
+[![Build Status](https://secure.travis-ci.org/dodo/node-bufferstream.png)](http://travis-ci.org/dodo/node-bufferstream)
