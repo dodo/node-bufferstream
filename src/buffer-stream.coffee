@@ -35,7 +35,8 @@ class BufferStream extends Valve
         @splitters = []
         @__defineGetter__ 'length', () => @buffer.length
         # states
-        @enabled = on
+        @enabled  = on
+        @writable = off
         @writable = on if @size is 'flexible'
         #init
         @reset()
