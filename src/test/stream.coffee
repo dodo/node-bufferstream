@@ -56,7 +56,7 @@ module.exports =
 
 
     pipe: (æ) ->
-        buffer = new BufferStream split:'\n'
+        buffer = new BufferStream size:'flexible', split:'\n'
         buffer.on 'data', (data) -> æ.equal data.toString(), readme.shift()
         buffer.on 'end', ->
             æ.equal buffer.length, 0
