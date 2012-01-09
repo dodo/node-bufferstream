@@ -42,6 +42,37 @@ module.exports =
         æ.done()
 
 
+    split: (æ) ->
+        stream = new BufferStream
+            encoding:'utf8'
+            size:'flexible'
+            split:['//', ':']
+        stream.on 'end', ->
+            æ.equal stream.disabled, yes
+            æ.equal i, 0
+            æ.done()
+
+        results = [
+            ["buffer",  ":"]
+            ["stream", "//"]
+            ["23:42" , "//"]
+        ]
+
+        i = 2
+        stream.on 'split', (chunk, token) ->
+            æ.deepEqual [chunk.toString(), token], results.shift()
+            if token is ':' or token is '//' and !(--i)
+                stream.disable(token)
+
+        # only one result expected
+        stream.on 'data', (chunk) -> æ.equal chunk.toString(), "disabled"
+
+        æ.equal stream.writable, yes
+        æ.equal stream.size, 'flexible'
+        æ.equal stream.write("buffer:stream//23:42//disabled"), true
+        stream.end()
+
+
     pipe: (æ) ->
         buffer = new BufferStream size:'flexible'
         buffer.on 'data', (data) -> throw 'up'

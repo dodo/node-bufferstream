@@ -44,32 +44,6 @@ module.exports =
         æ.done()
 
 
-    split: (æ) ->
-        stream = new BufferStream
-            encoding:'utf8'
-            size:'flexible'
-            split:['//', ':']
-        stream.on 'end', æ.done
-
-        results = [
-            ["buffer",  ":"]
-            ["stream", "//"]
-            ["23:42" , "//"]
-        ]
-
-        i = 2
-        stream.on 'split', (chunk, token) ->
-            æ.deepEqual [chunk.toString(), token], results.shift()
-            if token is ':' or token is '//' and !(--i)
-                stream.disable(token)
-
-        # only one result expected
-        stream.on 'data', (chunk) -> æ.equal chunk.toString(), "disabled"
-
-        æ.equal stream.write("buffer:stream//23:42//disabled"), true
-        stream.end()
-
-
     shortcut: (æ) ->
         stream = new BufferStream size:'flexible', split:'\n'
         stream.on 'end', æ.done
