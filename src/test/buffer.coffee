@@ -48,7 +48,7 @@ module.exports =
             size:'flexible'
             split:['//', ':']
         stream.on 'end', ->
-            æ.equal stream.disabled, yes
+            æ.equal stream.finished, yes
             æ.equal i, 0
             æ.done()
 
