@@ -65,7 +65,7 @@ module.exports =
             æ.deepEqual readme, [ "END" ]
             æ.done()
 
-        filename = path.join(__dirname,"..","..","..","README.md")
+        filename = path.join(__dirname,"..","README.md")
         readme = "#{readFileSync(filename)}END".split('\n')
         stream = createReadStream filename
 
