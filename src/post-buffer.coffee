@@ -1,10 +1,11 @@
 BufferStream = require('./buffer-stream')
 
 class PostBuffer
-    constructor: (req) ->
+    constructor: (req, opts = {}) ->
         @callback = null
         @got_all_data = no
-        @stream = new BufferStream(size:'flexible')
+        opts.size ?= 'flexible' # recommended
+        @stream = new BufferStream(opts)
         req.on 'end', =>
             @got_all_data = yes
             @callback?(@stream.buffer)
