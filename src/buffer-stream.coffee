@@ -40,7 +40,7 @@ class BufferStream extends Valve
         @writable = on if @size is 'flexible'
         #init
         @reset()
-        super
+        super(opts)
         # shortcuts
         if opts.split?
             if isArray(opts.split)
