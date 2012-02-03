@@ -8,7 +8,6 @@ module.exports =
     defaults: (æ) ->
         buffer = new BufferStream size:'flexible'
 
-        æ.equal buffer.encoding, 'utf8'
         æ.equal buffer.length, 0
 
         results = ["123", "bufferstream", "a", "bc", "def"]
