@@ -28,30 +28,33 @@ cli.main (args, opts) ->
             res.header 'Content-Length', stats.size
             cli.progress length = 0
 
-            buffer = new BufferStream encoding:'binary', size:'flexible'
+            buffer = new BufferStream size:'flexible', blocking:no
             file = spawn 'cat', [filename] # a wild cat appears!
+            #file = {on:(->), stdout:fs.createReadStream(filename)}
 
-            file.stdout.pipe buffer
-            buffer.pipe res
+            @info "buffer has #{buffer.size} size."
 
             setTimeout( () =>
-                @info "set buffer size to none"
+                @info "set buffer size to none (buffer.length=#{buffer?.length})"
                 buffer?.setSize 'none'
-            , 10000)
+            , 500)
 
             buffer.on 'data', (chunk) ->
                 length += chunk.length
                 cli.progress length / stats.size
 
-            buffer.on 'pause', () =>
-                @debug "buffer paused."
+            buffer.on 'error', (err) =>
+                @error "buffer errored: #{err}"
 
-            buffer.on 'resume', () =>
-                @debug "buffer resumed."
+            res.on 'error', (err) =>
+                @error "res errored: #{err}"
 
-            buffer.on 'end', () =>
-                @info "buffer ended."
+            file.on 'exit', (code) =>
+                @debug "file.stdout exited with code #{code}."
 
+            @debug "start piping."
+            buffer.pipe res
+            file.stdout.pipe buffer
 
         server.listen opts.port, 'localhost', () =>
             @ok "server listen on port #{opts.port} …"
