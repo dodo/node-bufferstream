@@ -57,7 +57,7 @@ class BufferStream extends Stream
         @disable() if opts.disabled
 
     getBuffer: () => @buffer
-    toString:  () => @buffer.toString()
+    toString:     => @buffer.toString(arguments...)
     setEncoding: (@encoding) =>
     setSize: (@size) =>
         @clear() if not @paused and @size is 'none'
