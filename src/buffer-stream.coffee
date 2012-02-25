@@ -31,8 +31,10 @@ class BufferStream extends Stream
         # defaults
         opts.size     ?= 'none'
         opts.encoding ?= null
+        opts.blocking ?= yes
         # values
         @size = opts.size
+        @blocking = opts.blocking
         @splitters = []
         @__defineGetter__ 'length', () => @buffer.length
         @setEncoding(opts.encoding)
@@ -113,7 +115,15 @@ class BufferStream extends Stream
             split.call(this) if @enabled
             if @finished # currently finishing
                 return @clear()
-            return true # it's safe to immediately write again
+
+            if @blocking
+                return true # it's safe to immediately write again
+            else
+                # prevent write calls from blocking the whole process
+                process.nextTick =>
+                    @emit 'drain'
+                return false
+
 
         else # size is a number
             throw new Error("not implemented yet :(") # TODO
