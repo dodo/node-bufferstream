@@ -11,8 +11,7 @@
     "test": "cake build && nodeunit test",
     "prepublish": "cake build"}
 , "dependencies": {
-    "buffertools": ">= 1.0.3",
-    "valvestream": ">= 0.0.1"}
+    "buffertools": ">= 1.0.3"}
 , "devDependencies": {
     "nodeunit": ">= 0.5.4",
     "muffin": ">= 0.2.6",

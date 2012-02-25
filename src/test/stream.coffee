@@ -9,7 +9,7 @@ module.exports =
         buffer = new BufferStream
 
         æ.equal buffer.finished, no
-        æ.equal buffer.writable, no
+        æ.equal buffer.writable, yes
         æ.equal buffer.readable, yes
         æ.equal buffer.size, 'none'
 

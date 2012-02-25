@@ -1,4 +1,4 @@
-Valve = require 'valvestream'
+{ Stream } = require 'stream'
 fn = require './fn'
 [isArray, isBuffer] = [Array.isArray, Buffer.isBuffer]
 
@@ -16,7 +16,7 @@ split = () ->
                 cur = splitter
                 pos = i
         can_split = cur isnt null
-        break if not can_split
+        break unless can_split
         [found, rest] = fn.split(@buffer, pos, cur.length)
         @buffer = rest
         @emit('split', found, cur)
@@ -24,23 +24,27 @@ split = () ->
 
 
 
-class BufferStream extends Valve
+class BufferStream extends Stream
     constructor: (opts = {}) ->
         if typeof opts is 'string'
             opts = encoding:opts
         # defaults
-        opts.size ?= 'none'
+        opts.size     ?= 'none'
+        opts.encoding ?= null
         # values
         @size = opts.size
         @splitters = []
         @__defineGetter__ 'length', () => @buffer.length
+        @setEncoding(opts.encoding)
         # states
         @enabled  = on
-        @writable = off
-        @writable = on if @size is 'flexible'
+        @writable = on
+        @readable = on
+        @finished = off
+        @paused   = off
         #init
         @reset()
-        super(opts)
+        super()
         # shortcuts
         if opts.split?
             if isArray(opts.split)
@@ -52,6 +56,7 @@ class BufferStream extends Valve
 
     getBuffer: () => @buffer
     toString:  () => @buffer.toString()
+    setEncoding: (@encoding) =>
     setSize: (@size) =>
         @clear() if not @paused and @size is 'none'
 
@@ -80,8 +85,6 @@ class BufferStream extends Valve
                 callback.apply(this, arguments) if token is splitter
         @splitters = @splitters.concat(args)
 
-    ##
-    # overwrite Valve::write
     write: (buffer, encoding) =>
         unless @writable
             @emit 'error', new Error("Stream is not writable.")
@@ -99,28 +102,28 @@ class BufferStream extends Valve
         else
             @buffer = fn.concat(@buffer, buffer)
 
-        if @size is 'flexible'
-            if @enabled
-                # we buffer everything
-                split.call(this)
-                if @finished # currently finishing
-                    return @clear()
-                return true # it's safe to immediately write again
-            else
-                return @clear()
+        return false if @paused
 
-        else if @size is 'none'
-            @buffer = split.call(this) if @enabled
+        if @size is 'none'
+            split.call(this) if @enabled
             return @clear()
+
+        else if @size is 'flexible'
+            # we buffer everything
+            split.call(this) if @enabled
+            if @finished # currently finishing
+                return @clear()
+            return true # it's safe to immediately write again
 
         else # size is a number
             throw new Error("not implemented yet :(") # TODO
 
     clear: () =>
-        return unless @buffer.length
+        return true unless @buffer.length
         buffer = @buffer # get before reset
         @reset()
-        @flush buffer
+        @emit 'data', buffer # sync call
+        return not @paused # can be changed after emit('data', data)
 
     reset: () =>
         if typeof @size is 'number'
@@ -128,21 +131,30 @@ class BufferStream extends Valve
         else
             @buffer = new Buffer(0)
 
-    # FIXME
+    pause: () ->
+        return if @paused
+        @paused = yes
+        @emit 'pause'
+
     resume: () ->
-        return if not @paused or @jammed is 0
-        @jammed--
-        return unless @jammed is 0
+        return unless @paused
+        if not @enabled or @size is 'none' or @finished
+            @paused = no
+            return unless @clear()
         @emit 'drain'
-        @paused = no
-        @clear() if not @enabled or @size is 'none' or @finished # <------------
-        for source in @sources
-            source.resume?() if source.readable
-        @emit 'resume' if @size is 'none' # <-----------------------------------
+        @emit 'resume' if @size is 'none'
         if @finished
             @emit 'end'
             @emit 'close'
 
+    end: (data, encoding) ->
+        return if @finished
+        @finished = yes # we give write the change to eg clear the buffer
+        @write(data, encoding) if data?
+        @writable = off
+        unless @paused
+            @emit 'end'
+            @emit 'close'
 
 # exports
 
