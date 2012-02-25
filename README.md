@@ -17,6 +17,7 @@ BufferStream = require('bufferstream')
 stream = new BufferStream([{encoding:'utf8', size:'none'}]) // default
 ```
  * `encoding` default encoding for writing strings
+ * `blocking` if true and the source is a child_process the stream will block the entire process (timeouts wont work anymore, but splitting and listening on data still works, because they work sync)
  * `size` defines buffer level or sets buffer to given size (see ↓`setSize` for more)
  * `disabled` immediately call disable
  * `split` short form for:
