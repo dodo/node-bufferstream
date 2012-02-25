@@ -69,7 +69,7 @@ class BufferStream extends Stream
         for splitter in args
             i = @splitters.indexOf(splitter)
             continue if i is -1
-            @splitters = @splitters.slice(0,i).concat(@splitters.slice(i+1))
+            @splitters.splice(i, 1)
             break unless @splitters.length
         unless @splitters.length
             @enabled = off
