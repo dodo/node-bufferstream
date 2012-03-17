@@ -86,3 +86,31 @@ module.exports =
 
         stream.pipe buffer
 
+
+    drainage: (æ) ->
+        buffer = new BufferStream
+            size:'flexible'
+            disabled:yes
+        buffer.on 'data', (data) -> æ.equals results.shift(), data.toString()
+        buffer.on 'end', ->
+            æ.equals 0, results.length
+            æ.done()
+        results = [
+            "foo"
+            "barbaz"
+            "chaos"
+        ]
+
+        buffer.write "foo"
+        æ.equals 0, buffer.length
+        buffer.pause()
+        buffer.write "bar"
+        buffer.write "baz"
+        buffer.resume()
+        æ.equals 0, buffer.length
+        buffer.write "chaos"
+        æ.equals 0, buffer.length
+        buffer.end()
+
+
+
