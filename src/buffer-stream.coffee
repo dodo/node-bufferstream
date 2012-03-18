@@ -117,6 +117,7 @@ class BufferStream extends Stream
                 return @clear()
 
             if @blocking
+                @clear() unless @enabled
                 return true # it's safe to immediately write again
             else
                 # prevent write calls from blocking the whole process
