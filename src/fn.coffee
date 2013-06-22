@@ -3,7 +3,8 @@ isBuffer = Buffer.isBuffer
 
 { indexOf:exports.indexOf } = require 'buffertools'
 
-exports.concat = (args...) ->
+exports.concat = ((args...) -> Buffer.concat(args)) if Buffer.concat?
+exports.concat ?= (args...) ->
     # buffertools.concat returns SlowBuffer D:
     idx = -1
     length = 0
