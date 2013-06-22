@@ -18,4 +18,7 @@
     "coffee-script": ">= 1.1.2",
     "cli": ">= 0.3.7",
     "express": ">= 2.4.5"}
+, "licenses" : [
+    { "type": "MIT" ,
+      "url": "http://github.com/dodo/node-bufferstream/raw/master/LICENSE"} ]
 }
