@@ -1,7 +1,17 @@
 isBuffer = Buffer.isBuffer
 { min, max } = Math
 
-{ indexOf:exports.indexOf } = require 'buffertools'
+try
+    { indexOf:exports.indexOf } = require 'buffertools'
+catch e
+    require 'bufferjs/indexOf'
+    { indexOf } = Buffer
+    exports.indexOf = (needle) -> indexOf(this, needle)
+    exports.warn = "Warning: using slow naiv Buffer.indexOf function!\n" +
+                   "`npm install buffertools` to speed things up."
+    # allow to disable warnings by setting .warn to a falsy value
+    process.nextTick ->
+        console.warn exports.warn if exports.warn
 
 exports.concat = ((args...) -> Buffer.concat(args)) if Buffer.concat?
 exports.concat ?= (args...) ->

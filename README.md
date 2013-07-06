@@ -145,6 +145,15 @@ post.pipe(stream, options);
 pumps data into another stream to allow incoming streams
 given options will be passed to Stream.pipe
 
+## note
+
+To improve platform independence bufferstream is using `bufferjs` instead of `buffertools` since version `0.6.0`.
+Just run `npm install buffertools` to use their implementation of `Buffer.indexOf` which is sligthly faster than `bufferjs`'s version.
+if you're forced to use the javascript-only version of `Buffer.indexOf` (like on windows) you can disable the warning by:
+```javascript
+require('bufferstream').fn.warn = false
+```
+
 ## example
 
 ```javascript

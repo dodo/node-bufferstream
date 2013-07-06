@@ -11,7 +11,7 @@
     "test": "cake build && nodeunit test",
     "prepublish": "cake build"}
 , "dependencies": {
-    "buffertools": ">= 1.0.3"}
+    "bufferjs": ">= 2.0.0"}
 , "devDependencies": {
     "nodeunit": ">= 0.5.4",
     "muffin": ">= 0.2.6",
