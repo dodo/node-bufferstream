@@ -12,6 +12,8 @@
     "prepublish": "cake build"}
 , "dependencies": {
     "bufferjs": ">= 2.0.0"}
+, "optionalDependencies": {
+    "buffertools": ">= 1.0.3"}
 , "devDependencies": {
     "nodeunit": ">= 0.5.4",
     "muffin": ">= 0.2.6",
