@@ -71,3 +71,24 @@ module.exports =
 
         stream.pipe buffer
 
+    'pause/resume split': (æ) ->
+        stream = new BufferStream size:'flexible'
+        stream.on 'data', (chunk) -> æ.equal chunk.toString(), results.shift()
+        stream.on 'end', ->
+            æ.equal stream.length, 0
+            æ.equal stream.toString(), ""
+            æ.done()
+
+        stream.split '/', (part) ->
+            stream.pause()
+            process.nextTick ->
+                results.push(part.toString())
+                stream.resume()
+
+        results = "buffer".split('')
+
+        stream.write "b/u/f/f/e/r/"
+        stream.end()
+
+
+
