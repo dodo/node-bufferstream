@@ -20,7 +20,7 @@ split = () ->
         [found, rest] = fn.split(@buffer, pos, cur.length)
         @buffer = rest
         @emit('split', found, cur)
-        break if not @enabled or @buffer.length is 0
+        break if @paused or not @enabled or @buffer.length is 0
 
 
 
@@ -149,8 +149,10 @@ class BufferStream extends Stream
 
     resume: () ->
         return unless @paused
+        @paused = no
+        split.call(this)
+        return if @paused # can be changed during split
         if not @enabled or @size is 'none' or @finished
-            @paused = no
             return unless @clear()
         @emit 'drain'
         @emit 'resume' if @size is 'none'
